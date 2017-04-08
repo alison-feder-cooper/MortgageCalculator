@@ -10,7 +10,6 @@ import javax.persistence.*;
 @Table(name = "DailyRates")
 public class DailyRate {
 
-    //lender, mortgageProductType, interest_rate, price
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column

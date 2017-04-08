@@ -3,6 +3,7 @@ package com.mortgagecalculator.service;
 import com.mortgagecalculator.model.DailyRate;
 import com.mortgagecalculator.model.parser.DailyRateParser;
 import com.mortgagecalculator.repository.DailyRateRepository;
+import com.mortgagecalculator.repository.ParValueRateRepository;
 import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,13 +19,16 @@ import java.util.List;
 
 @Component
 @Transactional
-public class DailyRateIngestionService {
+public class DailyRateService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DailyRateIngestionService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DailyRateService.class);
     private static final String LOCAL_DATE_FILE_PATTERN = "MMddyyyy";
 
     @Autowired
     private DailyRateRepository dailyRateRepository;
+
+    @Autowired
+    private ParValueRateRepository parValueRateRepository;
 
     //TODO consider how to make this idempotent; for now, if there are records for specified day, throw an error
     //consider pulling path from a property; for now, will require it as a param for testing purposes
@@ -55,6 +59,13 @@ public class DailyRateIngestionService {
 
         dailyRateRepository.save(dailyRates);
         return Collections.unmodifiableList(dailyRates);
+    }
+
+    public List<DailyRate> cacheParValueRates(LocalDate date) {
+        List<DailyRate> parValueRatesForLenders = dailyRateRepository.findParValueDailyRatesForLenders(date);
+        parValueRateRepository.save(parValueRatesForLenders);
+        return Collections.unmodifiableList(parValueRatesForLenders);
+
     }
 
     private boolean hasRecordsForApplicableDate(LocalDate applicableDate) {

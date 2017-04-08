@@ -13,8 +13,8 @@ import java.util.List;
 @Transactional
 public class QuoteService {
 
-    //TODO
-    public List<Quote> createQuotes(List<DailyRate> dailyRates) {
+    //TODO create quotes from daily rates as they are called for; think about how to model monthly payment calculators
+    public List<Quote> createQuotes(List<DailyRate> dailyRates, long loanAmountCents) {
         return new ArrayList<>();
     }
 }

@@ -19,16 +19,16 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @Transactional
-public class DailyRateIngestionServiceTest {
+public class DailyRateServiceTest {
 
     @Autowired
-    private DailyRateIngestionService dailyRateIngestionService;
+    private DailyRateService dailyRateService;
 
     @Test
     public void validInput_noPreexistingRecordsForDate() throws IOException {
 
         LocalDate applicableDay = new LocalDate(2017, 4, 1);
-        List<DailyRate> dailyRates = dailyRateIngestionService.ingestRatesForDate(applicableDay,
+        List<DailyRate> dailyRates = dailyRateService.ingestRatesForDate(applicableDay,
                 "src/test/resources/service/");
 
         assertEquals(3, dailyRates.size());
@@ -44,8 +44,8 @@ public class DailyRateIngestionServiceTest {
     public void invalidInput_preexistingRecordsForDate() throws IOException {
 
         LocalDate applicableDay = new LocalDate(2017, 4, 1);
-        dailyRateIngestionService.ingestRatesForDate(applicableDay, "src/test/resources/service/");
+        dailyRateService.ingestRatesForDate(applicableDay, "src/test/resources/service/");
         //attempt to read again
-        dailyRateIngestionService.ingestRatesForDate(applicableDay, "src/test/resources/service/");
+        dailyRateService.ingestRatesForDate(applicableDay, "src/test/resources/service/");
     }
 }
