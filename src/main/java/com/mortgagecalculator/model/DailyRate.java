@@ -94,4 +94,28 @@ public class DailyRate {
                 ", createdDateTime=" + createdDateTime +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DailyRate dailyRate = (DailyRate) o;
+
+        if (Float.compare(dailyRate.getInterestRate(), getInterestRate()) != 0) return false;
+        if (Float.compare(dailyRate.getPrice(), getPrice()) != 0) return false;
+        if (!getLenderName().equals(dailyRate.getLenderName())) return false;
+        if (getMortgageProductType() != dailyRate.getMortgageProductType()) return false;
+        return getApplicableDate().equals(dailyRate.getApplicableDate());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getLenderName().hashCode();
+        result = 31 * result + getMortgageProductType().hashCode();
+        result = 31 * result + (getInterestRate() != +0.0f ? Float.floatToIntBits(getInterestRate()) : 0);
+        result = 31 * result + (getPrice() != +0.0f ? Float.floatToIntBits(getPrice()) : 0);
+        result = 31 * result + getApplicableDate().hashCode();
+        return result;
+    }
 }

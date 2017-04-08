@@ -1,23 +1,32 @@
 package com.mortgagecalculator.task;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
+import com.mortgagecalculator.service.DailyRateIngestionService;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ScheduledTasks {
 
-    private static final Logger log = LoggerFactory.getLogger(ScheduledTasks.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ScheduledTasks.class);
 
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+    @Autowired
+    private DailyRateIngestionService dailyRateIngestionService;
 
-    @Scheduled(fixedRate = 5000)
-    public void reportCurrentTime() {
-        //TODO save daily rates to db
-        log.info("The time is now {}", dateFormat.format(new Date()));
+    //Scheduled to run ingestion every weekday at 10 am
+    @Scheduled(cron = "0 0 10 * * MON-FRI")
+    public void ingest() {
+        LOG.info("Beginning file ingestion at {}", DateTime.now());
+        //TODO property based on env
+        String directoryName = "src/test/resources/";
+        try {
+            dailyRateIngestionService.ingestRatesForDate(LocalDate.now(), directoryName);
+        } catch (Exception e) {
+            LOG.error("Error ingesting files for {} ", LocalDate.now(), e);
+        }
     }
 }
