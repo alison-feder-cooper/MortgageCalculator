@@ -11,4 +11,7 @@ import java.util.List;
 public interface DailyRateRepository extends CrudRepository<DailyRate, Long> {
 
     List<DailyRate> findByApplicableDate(LocalDate applicableDate);
+
+    //TODO par value rates by lender for day
+    List<DailyRate> findParValueDailyRatesForLenders(LocalDate applicableDate);
 }
