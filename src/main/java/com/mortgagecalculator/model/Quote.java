@@ -3,12 +3,10 @@ package com.mortgagecalculator.model;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
-//TODO
+@Entity
+@Table(name = "Quotes")
 public class Quote {
 
     @Id
@@ -16,7 +14,9 @@ public class Quote {
     @Column
     private long id;
 
-    //TODO foreign key daily rate
+    @OneToOne
+    @PrimaryKeyJoinColumn
+    private DailyRate dailyRate;
 
     @Column(nullable = false)
     private long loanAmountCents;
@@ -31,4 +31,67 @@ public class Quote {
 
     @Column(nullable = false)
     private DateTime createdDateTime;
+
+    //needed by hibernate
+    protected Quote(DailyRate dailyRate, long loanAmountCents, long monthlyPaymentAmountCents) {
+        this.dailyRate = dailyRate;
+        this.loanAmountCents = loanAmountCents;
+        this.monthlyPaymentAmountCents = monthlyPaymentAmountCents;
+        this.applicableDate = dailyRate.getApplicableDate();
+        this.createdDateTime = DateTime.now();
+    }
+
+    public DailyRate getDailyRate() {
+        return dailyRate;
+    }
+
+    public long getLoanAmountCents() {
+        return loanAmountCents;
+    }
+
+    public long getMonthlyPaymentAmountCents() {
+        return monthlyPaymentAmountCents;
+    }
+
+    public LocalDate getApplicableDate() {
+        return applicableDate;
+    }
+
+    public DateTime getCreatedDateTime() {
+        return createdDateTime;
+    }
+
+    @Override
+    public String toString() {
+        return "Quote{" +
+                "id=" + id +
+                ", dailyRate=" + dailyRate +
+                ", loanAmountCents=" + loanAmountCents +
+                ", monthlyPaymentAmountCents=" + monthlyPaymentAmountCents +
+                ", applicableDate=" + applicableDate +
+                ", createdDateTime=" + createdDateTime +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Quote quote = (Quote) o;
+
+        if (getLoanAmountCents() != quote.getLoanAmountCents()) return false;
+        if (getMonthlyPaymentAmountCents() != quote.getMonthlyPaymentAmountCents()) return false;
+        if (!getDailyRate().equals(quote.getDailyRate())) return false;
+        return getApplicableDate().equals(quote.getApplicableDate());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getDailyRate().hashCode();
+        result = 31 * result + (int) (getLoanAmountCents() ^ (getLoanAmountCents() >>> 32));
+        result = 31 * result + (int) (getMonthlyPaymentAmountCents() ^ (getMonthlyPaymentAmountCents() >>> 32));
+        result = 31 * result + getApplicableDate().hashCode();
+        return result;
+    }
 }

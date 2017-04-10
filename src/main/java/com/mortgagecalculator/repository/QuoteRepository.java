@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-//TODO
 @Repository
 public interface QuoteRepository extends CrudRepository<Quote, Long> {
 

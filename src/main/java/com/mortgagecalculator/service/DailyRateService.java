@@ -1,9 +1,10 @@
 package com.mortgagecalculator.service;
 
 import com.mortgagecalculator.model.DailyRate;
+import com.mortgagecalculator.model.ParValueDailyRate;
 import com.mortgagecalculator.model.parser.DailyRateParser;
 import com.mortgagecalculator.repository.DailyRateRepository;
-import com.mortgagecalculator.repository.ParValueRateRepository;
+import com.mortgagecalculator.repository.ParValueDailyRateRepository;
 import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,10 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Component
 @Transactional
@@ -28,7 +26,7 @@ public class DailyRateService {
     private DailyRateRepository dailyRateRepository;
 
     @Autowired
-    private ParValueRateRepository parValueRateRepository;
+    private ParValueDailyRateRepository parValueDailyRateRepository;
 
     //TODO consider how to make this idempotent; for now, if there are records for specified day, throw an error
     //consider pulling path from a property; for now, will require it as a param for testing purposes
@@ -62,8 +60,10 @@ public class DailyRateService {
     }
 
     public List<DailyRate> cacheParValueRates(LocalDate date) {
-        List<DailyRate> parValueRatesForLenders = dailyRateRepository.findParValueDailyRatesForLenders(date);
-        parValueRateRepository.save(parValueRatesForLenders);
+        //please see notes in DailyRateRepository; this is a hacky solution. I'm new to JPQL and could not get
+        //a native sql query working with spring boot
+        List<DailyRate> parValueRatesForLenders = getParValueRatesForLenders(date);
+        parValueDailyRateRepository.save(asParValueRates(parValueRatesForLenders));
         return Collections.unmodifiableList(parValueRatesForLenders);
 
     }
@@ -88,5 +88,30 @@ public class DailyRateService {
 
     private String getFilePathPattern(LocalDate date) {
         return date.toString(LOCAL_DATE_FILE_PATTERN);
+    }
+
+    private List<DailyRate> getParValueRatesForLenders(LocalDate date) {
+        List<DailyRate> allRatesForDate = dailyRateRepository.findByApplicableDate(date);
+        Map<String, DailyRate> lenderParValueRateMap = new HashMap<>();
+        for (DailyRate rate : allRatesForDate) {
+            if (!lenderParValueRateMap.containsKey(rate.getLenderName())) {
+                lenderParValueRateMap.put(rate.getLenderName(), rate);
+                continue;
+            }
+            String lender = rate.getLenderName();
+            DailyRate currentRateForLender = lenderParValueRateMap.get(lender);
+            if (Math.abs(rate.getPrice()) < Math.abs(currentRateForLender.getPrice())) {
+                lenderParValueRateMap.put(lender, rate);
+            }
+        }
+        return new ArrayList<>(lenderParValueRateMap.values());
+    }
+
+    private List<ParValueDailyRate> asParValueRates(List<DailyRate> dailyRates) {
+        List<ParValueDailyRate> parValueDailyRates = new ArrayList<>();
+        for (DailyRate dailyRate : dailyRates) {
+            parValueDailyRates.add(ParValueDailyRate.fromDailyRate(dailyRate));
+        }
+        return parValueDailyRates;
     }
 }

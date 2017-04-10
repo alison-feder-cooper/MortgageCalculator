@@ -1,8 +1,8 @@
 package com.mortgagecalculator.web;
 
-import com.mortgagecalculator.model.DailyRate;
+import com.mortgagecalculator.model.ParValueDailyRate;
 import com.mortgagecalculator.model.Quote;
-import com.mortgagecalculator.repository.ParValueRateRepository;
+import com.mortgagecalculator.repository.ParValueDailyRateRepository;
 import com.mortgagecalculator.repository.QuoteRepository;
 import com.mortgagecalculator.service.QuoteService;
 import org.joda.time.LocalDate;
@@ -26,7 +26,7 @@ public class ApiController {
     private QuoteService quoteService;
 
     @Autowired
-    private ParValueRateRepository parValueRateRepository;
+    private ParValueDailyRateRepository parValueDailyRateRepository;
 
     //interpreting the spec to have this endpoint return the quotes for today, since the only parameter is loan amount /
     //doesn't include date
@@ -36,7 +36,7 @@ public class ApiController {
         if (!quotesForTodayAndForAmount.isEmpty()) {
             return quotesForTodayAndForAmount;
         }
-        List<DailyRate> parValueRatesForToday = parValueRateRepository.findByApplicableDate(LocalDate.now());
+        List<ParValueDailyRate> parValueRatesForToday = parValueDailyRateRepository.findByApplicableDate(LocalDate.now());
         return quoteService.createQuotes(parValueRatesForToday, loanAmountCents);
     }
 }

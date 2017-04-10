@@ -38,6 +38,9 @@ public class DailyRate {
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")
     private DateTime createdDateTime;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    private Quote quote;
+
     //needed by hibernate
     protected DailyRate() {
 
