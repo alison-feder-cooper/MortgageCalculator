@@ -32,9 +32,9 @@ public class ScheduledTasks {
 
         LOG.info("Ending file ingestion at {}", DateTime.now());
 
-        LOG.info("Beginning par value identification at {}", DateTime.now());
+        LOG.info("Beginning par value storage at {}", DateTime.now());
         dailyRateService.cacheParValueRates(LocalDate.now());
-        LOG.info("Ending par value identification at {}", DateTime.now());
+        LOG.info("Ending par value storage at {}", DateTime.now());
 
 
     }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 
 @RestController
@@ -32,18 +33,19 @@ public class ApiController {
 
     //interpreting the spec to have this endpoint return the quotes for today, since the only parameter is loan amount /
     //doesn't include date
+    //return as list, even thoug have worked with sets to enforce uniqueness, since response will be JSON
     @RequestMapping(method = RequestMethod.GET, value = "/quotes_for_today")
     public List<QuoteResponse> optimalQuotesForToday(@RequestParam("loan_amount_cents") long loanAmountCents) {
-        List<Quote> quotesForTodayAndForAmount = quoteRepository.findByApplicableDateAndLoanAmountCents(LocalDate.now(), loanAmountCents);
+        Set<Quote> quotesForTodayAndForAmount = quoteRepository.findByApplicableDateAndLoanAmountCents(LocalDate.now(), loanAmountCents);
         if (!quotesForTodayAndForAmount.isEmpty()) {
             return createQuoteResponses(quotesForTodayAndForAmount);
         }
-        List<ParValueDailyRate> parValueRatesForToday = parValueDailyRateRepository.findByApplicableDate(LocalDate.now());
-        List<Quote> createdQuotes = quoteService.createQuotes(parValueRatesForToday, loanAmountCents);
+        Set<ParValueDailyRate> parValueRatesForToday = parValueDailyRateRepository.findByApplicableDate(LocalDate.now());
+        Set<Quote> createdQuotes = quoteService.createQuotes(parValueRatesForToday, loanAmountCents);
         return createQuoteResponses(createdQuotes);
     }
 
-    private List<QuoteResponse> createQuoteResponses(List<Quote> quotes) {
+    private List<QuoteResponse> createQuoteResponses(Set<Quote> quotes) {
         List<QuoteResponse> quoteResponses = new ArrayList<>();
         for (Quote quote : quotes) {
             quoteResponses.add(QuoteResponse.fromQuote(quote));

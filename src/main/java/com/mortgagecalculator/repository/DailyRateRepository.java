@@ -5,12 +5,12 @@ import org.joda.time.LocalDate;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface DailyRateRepository extends CrudRepository<DailyRate, Long> {
 
-    List<DailyRate> findByApplicableDate(LocalDate applicableDate);
+    Set<DailyRate> findByApplicableDate(LocalDate applicableDate);
 
     /*I'm new to the JPQL query language; I could not find a way to implement the below query for par value by lender on
     specific date. Subqueries seem limited, and attempting to implement this in raw SQL / as a native query also didn't work.

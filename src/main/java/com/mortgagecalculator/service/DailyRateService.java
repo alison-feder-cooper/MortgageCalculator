@@ -32,14 +32,14 @@ public class DailyRateService {
 
     //TODO consider how to make this idempotent; for now, if there are records for specified day, throw an error
     //consider pulling path from a property; for now, will require it as a param for testing purposes
-    public List<DailyRate> ingestRatesForDate(LocalDate date, String path) throws IOException {
+    public Set<DailyRate> ingestRatesForDate(LocalDate date, String path) throws IOException {
         if (hasRecordsForApplicableDate(date)) {
             throw new IllegalStateException("Already ingested records for " + date.toString());
         }
 
         List<File> files = getFilesToParse(date, path);
         DailyRateParser parser = new DailyRateParser();
-        List<DailyRate> dailyRates = new ArrayList<>();
+        Set<DailyRate> dailyRates = new HashSet<>();
 
         if (files.isEmpty()) {
             throw new FileNotFoundException("No files for " + date);
@@ -58,20 +58,20 @@ public class DailyRateService {
         }
 
         dailyRateRepository.save(dailyRates);
-        return Collections.unmodifiableList(dailyRates);
+        return Collections.unmodifiableSet(dailyRates);
     }
 
-    public List<DailyRate> cacheParValueRates(LocalDate date) {
+    public Set<DailyRate> cacheParValueRates(LocalDate date) {
         //please see notes in DailyRateRepository; this is a hacky solution. I'm new to JPQL and could not get
         //a native sql query working with spring boot
-        List<DailyRate> parValueRatesForLenders = getParValueRatesForLenders(date);
+        Set<DailyRate> parValueRatesForLenders = getParValueRatesForLenders(date);
         parValueDailyRateRepository.save(asParValueRates(parValueRatesForLenders));
-        return Collections.unmodifiableList(parValueRatesForLenders);
+        return Collections.unmodifiableSet(parValueRatesForLenders);
 
     }
 
     private boolean hasRecordsForApplicableDate(LocalDate applicableDate) {
-        List<DailyRate> ratesForDay = dailyRateRepository.findByApplicableDate(applicableDate);
+        Set<DailyRate> ratesForDay = dailyRateRepository.findByApplicableDate(applicableDate);
         return ratesForDay != null && !ratesForDay.isEmpty();
     }
 
@@ -92,8 +92,8 @@ public class DailyRateService {
         return date.toString(LOCAL_DATE_FILE_PATTERN);
     }
 
-    private List<DailyRate> getParValueRatesForLenders(LocalDate date) {
-        List<DailyRate> allRatesForDate = dailyRateRepository.findByApplicableDate(date);
+    private Set<DailyRate> getParValueRatesForLenders(LocalDate date) {
+        Set<DailyRate> allRatesForDate = dailyRateRepository.findByApplicableDate(date);
         Map<Pair<String, MortgageProductType>, DailyRate> lenderParValueRateMap = new HashMap<>();
         for (DailyRate rate : allRatesForDate) {
             Pair<String, MortgageProductType> lenderMortgageTypePair = Pair.of(rate.getLenderName(), rate.getMortgageProductType());
@@ -106,11 +106,11 @@ public class DailyRateService {
                 lenderParValueRateMap.put(lenderMortgageTypePair, rate);
             }
         }
-        return new ArrayList<>(lenderParValueRateMap.values());
+        return new HashSet<>(lenderParValueRateMap.values());
     }
 
-    private List<ParValueDailyRate> asParValueRates(List<DailyRate> dailyRates) {
-        List<ParValueDailyRate> parValueDailyRates = new ArrayList<>();
+    private Set<ParValueDailyRate> asParValueRates(Set<DailyRate> dailyRates) {
+        Set<ParValueDailyRate> parValueDailyRates = new HashSet<>();
         for (DailyRate dailyRate : dailyRates) {
             parValueDailyRates.add(ParValueDailyRate.fromDailyRate(dailyRate));
         }

@@ -11,10 +11,10 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.List;
+import java.util.Set;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -48,8 +48,7 @@ public class ParValueDailyRateRepositoryTest {
         entityManager.persist(parValueDailyRate);
         entityManager.persist(ParValueDailyRate.fromDailyRate(otherDailyRate));
 
-        List<ParValueDailyRate> retrievedParValueDailyRates = parValueDailyRateRepository.findByApplicableDate(desiredDate);
-        assertEquals(1, retrievedParValueDailyRates.size());
-        assertTrue(retrievedParValueDailyRates.contains(parValueDailyRate));
+        Set<ParValueDailyRate> retrievedParValueDailyRates = parValueDailyRateRepository.findByApplicableDate(desiredDate);
+        assertThat(retrievedParValueDailyRates, containsInAnyOrder(parValueDailyRate));
     }
 }

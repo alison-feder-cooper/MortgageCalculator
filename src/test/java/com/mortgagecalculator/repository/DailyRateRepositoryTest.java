@@ -10,10 +10,10 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.List;
+import java.util.Set;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
+import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -43,10 +43,7 @@ public class DailyRateRepositoryTest {
         entityManager.persist(dailyRate2);
         entityManager.persist(otherDailyRate);
 
-        List<DailyRate> retrievedDailyRates = dailyRateRepository.findByApplicableDate(desiredDate);
-        assertEquals(2, retrievedDailyRates.size());
-        assertTrue(retrievedDailyRates.contains(dailyRate1));
-        assertTrue(retrievedDailyRates.contains(dailyRate2));
-
+        Set<DailyRate> retrievedDailyRates = dailyRateRepository.findByApplicableDate(desiredDate);
+        assertThat(retrievedDailyRates, containsInAnyOrder(dailyRate1, dailyRate2));
     }
 }

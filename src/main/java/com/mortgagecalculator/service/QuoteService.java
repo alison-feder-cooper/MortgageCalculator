@@ -31,8 +31,8 @@ public class QuoteService {
     @Autowired
     private QuoteRepository quoteRepository;
 
-    public List<Quote> createQuotes(List<ParValueDailyRate> parValueDailyRates, long loanAmountCents) {
-        List<Quote> quotes = new ArrayList<>();
+    public Set<Quote> createQuotes(Set<ParValueDailyRate> parValueDailyRates, long loanAmountCents) {
+        Set<Quote> quotes = new HashSet<>();
         for (ParValueDailyRate parValueDailyRate : parValueDailyRates) {
             DailyRate dailyRate = parValueDailyRate.getDailyRate();
             MonthlyPaymentCalculator calculator = CALCULATORS_MAP.get(dailyRate.getMortgageProductType());
@@ -41,6 +41,6 @@ public class QuoteService {
             quotes.add(new Quote(dailyRate, loanAmountCents, monthlyPaymentAmountCents));
         }
         quoteRepository.save(quotes);
-        return Collections.unmodifiableList(quotes);
+        return Collections.unmodifiableSet(quotes);
     }
 }

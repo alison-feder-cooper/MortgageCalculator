@@ -7,7 +7,7 @@ import com.mortgagecalculator.model.Quote;
 import com.mortgagecalculator.repository.DailyRateRepository;
 import com.mortgagecalculator.repository.ParValueDailyRateRepository;
 import com.mortgagecalculator.repository.QuoteRepository;
-import org.assertj.core.util.Lists;
+import org.assertj.core.util.Sets;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,7 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -56,11 +56,10 @@ public class QuoteServiceTest {
         parValueDailyRateRepository.save(bananaParValueDailyRate);
 
         long loanAmountCents = 10000000;
+        Set<Quote> generatedQuotes = quoteService.createQuotes(
+                Sets.newLinkedHashSet(appleParValueDailyRate, bananaParValueDailyRate), loanAmountCents);
 
-        List<Quote> generatedQuotes = quoteService.createQuotes(
-                Lists.newArrayList(appleParValueDailyRate, bananaParValueDailyRate), loanAmountCents);
-
-        List<Quote> storedQuotes = quoteRepository.findByApplicableDateAndLoanAmountCents(applicableDate, loanAmountCents);
+        Set<Quote> storedQuotes = quoteRepository.findByApplicableDateAndLoanAmountCents(applicableDate, loanAmountCents);
 
         assertEquals(2, generatedQuotes.size());
         assertThat(generatedQuotes, is(storedQuotes));

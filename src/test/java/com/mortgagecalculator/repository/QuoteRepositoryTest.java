@@ -11,7 +11,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.List;
+import java.util.Set;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
@@ -51,7 +51,7 @@ public class QuoteRepositoryTest {
         entityManager.persist(quote2);
         entityManager.persist(quote3);
 
-        List<Quote> retrievedQuotes = quoteRepository.findByApplicableDateAndLoanAmountCents(desiredDate, 2000000);
+        Set<Quote> retrievedQuotes = quoteRepository.findByApplicableDateAndLoanAmountCents(desiredDate, 2000000);
         assertEquals(1, retrievedQuotes.size());
         assertTrue(retrievedQuotes.contains(quote2));
     }

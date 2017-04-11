@@ -14,7 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
@@ -39,7 +39,7 @@ public class DailyRateServiceTest {
     public void validInput_noPreexistingRecordsForDate() throws IOException {
 
         LocalDate applicableDay = new LocalDate(2017, 4, 1);
-        List<DailyRate> dailyRates = dailyRateService.ingestRatesForDate(applicableDay,
+        Set<DailyRate> dailyRates = dailyRateService.ingestRatesForDate(applicableDay,
                 "src/test/resources/service/");
 
         assertEquals(3, dailyRates.size());
@@ -93,12 +93,12 @@ public class DailyRateServiceTest {
         dailyRateRepository.save(appleParValueRate30Years);
         dailyRateRepository.save(bananaParValueRate);
 
-        List<DailyRate> cachedParValues = dailyRateService.cacheParValueRates(desiredDate);
+        Set<DailyRate> cachedParValues = dailyRateService.cacheParValueRates(desiredDate);
         assertEquals(3, cachedParValues.size());
         assertThat(cachedParValues,
                 containsInAnyOrder(appleParValueRate15Years, appleParValueRate30Years, bananaParValueRate));
 
-        List<ParValueDailyRate> retrievedParValues = parValueDailyRateRepository.findByApplicableDate(desiredDate);
+        Set<ParValueDailyRate> retrievedParValues = parValueDailyRateRepository.findByApplicableDate(desiredDate);
         assertEquals(3, retrievedParValues.size());
         for (ParValueDailyRate parValueDailyRate : retrievedParValues) {
             assertTrue(cachedParValues.contains(parValueDailyRate.getDailyRate()));
