@@ -24,7 +24,7 @@ public class DailyRate {
     //float precision seems sufficient for rates and prices
 
     @Column(nullable = false)
-    private float interestRate;
+    private float annualInterestRate;
 
     @Column(nullable = false)
     private float price;
@@ -46,11 +46,11 @@ public class DailyRate {
 
     }
 
-    public DailyRate(String lenderName, MortgageProductType mortgageProductType, float interestRate, float price,
+    public DailyRate(String lenderName, MortgageProductType mortgageProductType, float annualInterestRate, float price,
                      LocalDate applicableDate) {
         this.lenderName = lenderName;
         this.mortgageProductType = mortgageProductType;
-        this.interestRate = interestRate;
+        this.annualInterestRate = annualInterestRate;
         this.price = price;
         this.applicableDate = applicableDate;
         this.createdDateTime = DateTime.now();
@@ -68,8 +68,8 @@ public class DailyRate {
         return mortgageProductType;
     }
 
-    public float getInterestRate() {
-        return interestRate;
+    public float getAnnualInterestRate() {
+        return annualInterestRate;
     }
 
     public float getPrice() {
@@ -90,7 +90,7 @@ public class DailyRate {
                 "id=" + id +
                 ", lenderName='" + lenderName + '\'' +
                 ", mortgageProductType=" + mortgageProductType +
-                ", interestRate=" + interestRate +
+                ", annualInterestRate=" + annualInterestRate +
                 ", price=" + price +
                 ", applicableDate=" + applicableDate +
                 ", createdDateTime=" + createdDateTime +
@@ -104,7 +104,7 @@ public class DailyRate {
 
         DailyRate dailyRate = (DailyRate) o;
 
-        if (Float.compare(dailyRate.getInterestRate(), getInterestRate()) != 0) return false;
+        if (Float.compare(dailyRate.getAnnualInterestRate(), getAnnualInterestRate()) != 0) return false;
         if (Float.compare(dailyRate.getPrice(), getPrice()) != 0) return false;
         if (!getLenderName().equals(dailyRate.getLenderName())) return false;
         if (getMortgageProductType() != dailyRate.getMortgageProductType()) return false;
@@ -115,7 +115,7 @@ public class DailyRate {
     public int hashCode() {
         int result = getLenderName().hashCode();
         result = 31 * result + getMortgageProductType().hashCode();
-        result = 31 * result + (getInterestRate() != +0.0f ? Float.floatToIntBits(getInterestRate()) : 0);
+        result = 31 * result + (getAnnualInterestRate() != +0.0f ? Float.floatToIntBits(getAnnualInterestRate()) : 0);
         result = 31 * result + (getPrice() != +0.0f ? Float.floatToIntBits(getPrice()) : 0);
         result = 31 * result + getApplicableDate().hashCode();
         return result;

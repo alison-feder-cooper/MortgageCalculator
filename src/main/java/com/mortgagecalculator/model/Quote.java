@@ -15,6 +15,8 @@ public class Quote {
     @Column
     private long id;
 
+    //we might want to provide quotes that aren't par value, for some reason; so a quote should have a daily rate instead
+    //of a par value daily rate
     @OneToOne
     @PrimaryKeyJoinColumn
     private DailyRate dailyRate;
@@ -66,6 +68,14 @@ public class Quote {
 
     public DateTime getCreatedDateTime() {
         return createdDateTime;
+    }
+
+    public boolean isFixed() {
+        return getDailyRate().getMortgageProductType().isFixed();
+    }
+
+    public int getFixedYears() {
+        return getDailyRate().getMortgageProductType().getFixedYears();
     }
 
     @Override

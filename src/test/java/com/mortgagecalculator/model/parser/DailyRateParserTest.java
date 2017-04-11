@@ -24,7 +24,7 @@ public class DailyRateParserTest {
         //then
         assertEquals("APPLE", parsedDailyRate.getLenderName());
         assertEquals(MortgageProductType.THIRTY_YEAR_FIXED, parsedDailyRate.getMortgageProductType());
-        assertEquals(3.250f, parsedDailyRate.getInterestRate(), 0);
+        assertEquals(3.250f, parsedDailyRate.getAnnualInterestRate(), 0);
         assertEquals(-1.165f, parsedDailyRate.getPrice(), 0);
         assertEquals(applicableDate, parsedDailyRate.getApplicableDate());
     }
@@ -42,7 +42,7 @@ public class DailyRateParserTest {
         //then
         assertEquals("APPLE", parsedDailyRate.getLenderName());
         assertEquals(MortgageProductType.FIFTEEN_YEAR_FIXED, parsedDailyRate.getMortgageProductType());
-        assertEquals(1.250f, parsedDailyRate.getInterestRate(), 0);
+        assertEquals(1.250f, parsedDailyRate.getAnnualInterestRate(), 0);
         assertEquals(1.100f, parsedDailyRate.getPrice(), 0);
         assertEquals(applicableDate, parsedDailyRate.getApplicableDate());
     }
@@ -60,7 +60,7 @@ public class DailyRateParserTest {
         //then
         assertEquals("BANANA", parsedDailyRate.getLenderName());
         assertEquals(MortgageProductType.FIVE_ONE_ADJUSTABLE, parsedDailyRate.getMortgageProductType());
-        assertEquals(2.222f, parsedDailyRate.getInterestRate(), 0);
+        assertEquals(2.222f, parsedDailyRate.getAnnualInterestRate(), 0);
         assertEquals(0.111f, parsedDailyRate.getPrice(), 0);
         assertEquals(applicableDate, parsedDailyRate.getApplicableDate());
     }
@@ -78,7 +78,7 @@ public class DailyRateParserTest {
         //then
         assertEquals("BANANA", parsedDailyRate.getLenderName());
         assertEquals(MortgageProductType.SEVEN_ONE_ADJUSTABLE, parsedDailyRate.getMortgageProductType());
-        assertEquals(3.000f, parsedDailyRate.getInterestRate(), 0);
+        assertEquals(3.000f, parsedDailyRate.getAnnualInterestRate(), 0);
         assertEquals(0.122f, parsedDailyRate.getPrice(), 0);
         assertEquals(applicableDate, parsedDailyRate.getApplicableDate());
     }
@@ -95,7 +95,7 @@ public class DailyRateParserTest {
         //then
         assertEquals("BANANA", parsedDailyRate.getLenderName());
         assertEquals(MortgageProductType.TEN_ONE_ADJUSTABLE, parsedDailyRate.getMortgageProductType());
-        assertEquals(0.008f, parsedDailyRate.getInterestRate(), 0);
+        assertEquals(0.008f, parsedDailyRate.getAnnualInterestRate(), 0);
         assertEquals(-4.111f, parsedDailyRate.getPrice(), 0);
         assertEquals(applicableDate, parsedDailyRate.getApplicableDate());
 
