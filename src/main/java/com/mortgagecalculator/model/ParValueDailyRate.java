@@ -23,6 +23,7 @@ public class ParValueDailyRate {
     //applicable date is also a first-order concept for a par value; so storing it here as well, instead of having to
     //join on daily rate
     @Column(nullable = false)
+    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
     private LocalDate applicableDate;
 
     @Column(nullable = false)

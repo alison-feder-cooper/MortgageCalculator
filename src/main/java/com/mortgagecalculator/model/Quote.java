@@ -1,5 +1,6 @@
 package com.mortgagecalculator.model;
 
+import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
@@ -27,13 +28,19 @@ public class Quote {
     //applicable date is also a first-order concept for a quote; so storing it here as well, instead of having to
     //join on daily rate
     @Column(nullable = false)
+    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
     private LocalDate applicableDate;
 
     @Column(nullable = false)
+    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")
     private DateTime createdDateTime;
 
     //needed by hibernate
-    protected Quote(DailyRate dailyRate, long loanAmountCents, long monthlyPaymentAmountCents) {
+    protected Quote()  {
+
+    }
+
+    public Quote(DailyRate dailyRate, long loanAmountCents, long monthlyPaymentAmountCents) {
         this.dailyRate = dailyRate;
         this.loanAmountCents = loanAmountCents;
         this.monthlyPaymentAmountCents = monthlyPaymentAmountCents;
