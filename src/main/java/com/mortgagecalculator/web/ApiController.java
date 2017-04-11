@@ -2,6 +2,7 @@ package com.mortgagecalculator.web;
 
 import com.mortgagecalculator.model.ParValueDailyRate;
 import com.mortgagecalculator.model.Quote;
+import com.mortgagecalculator.model.exception.DailyParValuesNotAvailableException;
 import com.mortgagecalculator.model.response.QuoteResponse;
 import com.mortgagecalculator.repository.ParValueDailyRateRepository;
 import com.mortgagecalculator.repository.QuoteRepository;
@@ -33,7 +34,7 @@ public class ApiController {
 
     //interpreting the spec to have this endpoint return the quotes for today, since the only parameter is loan amount /
     //doesn't include date
-    //return as list, even thoug have worked with sets to enforce uniqueness, since response will be JSON
+    //return as list, even though have worked with sets to enforce uniqueness, since response will be JSON
     @RequestMapping(method = RequestMethod.GET, value = "/quotes_for_today")
     public List<QuoteResponse> optimalQuotesForToday(@RequestParam("loan_amount_cents") long loanAmountCents) {
         Set<Quote> quotesForTodayAndForAmount = quoteRepository.findByApplicableDateAndLoanAmountCents(LocalDate.now(), loanAmountCents);
@@ -41,6 +42,9 @@ public class ApiController {
             return createQuoteResponses(quotesForTodayAndForAmount);
         }
         Set<ParValueDailyRate> parValueRatesForToday = parValueDailyRateRepository.findByApplicableDate(LocalDate.now());
+        if (parValueRatesForToday.isEmpty()) {
+            throw new DailyParValuesNotAvailableException();
+        }
         Set<Quote> createdQuotes = quoteService.createQuotes(parValueRatesForToday, loanAmountCents);
         return createQuoteResponses(createdQuotes);
     }
