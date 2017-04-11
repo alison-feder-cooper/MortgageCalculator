@@ -19,7 +19,7 @@ public interface DailyRateRepository extends CrudRepository<DailyRate, Long> {
      */
     /*
 "SELECT dr.* FROM " +
-            "(SELECT lender, MIN(ABS(price)) AS parValue FROM DailyRates WHERE applicableDate = :applicableDate GROUP BY lender) AS lenderParValues " +
+            "(SELECT lender, MIN(ABS(price)) AS parValue FROM DailyRates WHERE applicableDate = :applicableDate GROUP BY lender, mortgageProductType) AS lenderParValues " +
             "INNER JOIN DailyRates AS dr " +
             "ON lenderParValues.lender = dr.lender AND lenderParValues.parValue = dr.price " +
             "WHERE dr.applicableDate = :applicableDate"

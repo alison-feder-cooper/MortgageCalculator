@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -67,8 +69,10 @@ public class DailyRateServiceTest {
                 1.250f, 0.105f, desiredDate);
         DailyRate appleDailyRate2 = new DailyRate("APPLE", MortgageProductType.FIFTEEN_YEAR_FIXED,
                 0.250f, 1.111f, desiredDate);
-        DailyRate appleParValueRate = new DailyRate("APPLE", MortgageProductType.FIFTEEN_YEAR_FIXED,
+        DailyRate appleParValueRate15Years = new DailyRate("APPLE", MortgageProductType.FIFTEEN_YEAR_FIXED,
                 2.250f, -0.104f, desiredDate);
+        DailyRate appleParValueRate30Years = new DailyRate("APPLE", MortgageProductType.THIRTY_YEAR_FIXED,
+                2.350f, 0.108f, desiredDate);
 
         //BANANA lender rates for desired date
         DailyRate bananaDailyRate1 = new DailyRate("BANANA", MortgageProductType.FIFTEEN_YEAR_FIXED,
@@ -83,19 +87,19 @@ public class DailyRateServiceTest {
         dailyRateRepository.save(appleDailyRate1);
         dailyRateRepository.save(appleDailyRate2);
         dailyRateRepository.save(bananaDailyRate1);
-
-        dailyRateRepository.save(appleParValueRate);
-        dailyRateRepository.save(bananaParValueRate);
-
         dailyRateRepository.save(bananaParValueRateDayBefore);
 
+        dailyRateRepository.save(appleParValueRate15Years);
+        dailyRateRepository.save(appleParValueRate30Years);
+        dailyRateRepository.save(bananaParValueRate);
+
         List<DailyRate> cachedParValues = dailyRateService.cacheParValueRates(desiredDate);
-        assertEquals(2, cachedParValues.size());
-        assertTrue(cachedParValues.contains(appleParValueRate));
-        assertTrue(cachedParValues.contains(bananaParValueRate));
+        assertEquals(3, cachedParValues.size());
+        assertThat(cachedParValues,
+                containsInAnyOrder(appleParValueRate15Years, appleParValueRate30Years, bananaParValueRate));
 
         List<ParValueDailyRate> retrievedParValues = parValueDailyRateRepository.findByApplicableDate(desiredDate);
-        assertEquals(2, retrievedParValues.size());
+        assertEquals(3, retrievedParValues.size());
         for (ParValueDailyRate parValueDailyRate : retrievedParValues) {
             assertTrue(cachedParValues.contains(parValueDailyRate.getDailyRate()));
         }

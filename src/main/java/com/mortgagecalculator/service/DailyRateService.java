@@ -1,10 +1,12 @@
 package com.mortgagecalculator.service;
 
 import com.mortgagecalculator.model.DailyRate;
+import com.mortgagecalculator.model.MortgageProductType;
 import com.mortgagecalculator.model.ParValueDailyRate;
 import com.mortgagecalculator.model.parser.DailyRateParser;
 import com.mortgagecalculator.repository.DailyRateRepository;
 import com.mortgagecalculator.repository.ParValueDailyRateRepository;
+import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,16 +94,16 @@ public class DailyRateService {
 
     private List<DailyRate> getParValueRatesForLenders(LocalDate date) {
         List<DailyRate> allRatesForDate = dailyRateRepository.findByApplicableDate(date);
-        Map<String, DailyRate> lenderParValueRateMap = new HashMap<>();
+        Map<Pair<String, MortgageProductType>, DailyRate> lenderParValueRateMap = new HashMap<>();
         for (DailyRate rate : allRatesForDate) {
-            if (!lenderParValueRateMap.containsKey(rate.getLenderName())) {
-                lenderParValueRateMap.put(rate.getLenderName(), rate);
+            Pair<String, MortgageProductType> lenderMortgageTypePair = Pair.of(rate.getLenderName(), rate.getMortgageProductType());
+            if (!lenderParValueRateMap.containsKey(lenderMortgageTypePair)) {
+                lenderParValueRateMap.put(lenderMortgageTypePair, rate);
                 continue;
             }
-            String lender = rate.getLenderName();
-            DailyRate currentRateForLender = lenderParValueRateMap.get(lender);
-            if (Math.abs(rate.getPrice()) < Math.abs(currentRateForLender.getPrice())) {
-                lenderParValueRateMap.put(lender, rate);
+            DailyRate currentRateForLenderAndMortgageType = lenderParValueRateMap.get(lenderMortgageTypePair);
+            if (Math.abs(rate.getPrice()) < Math.abs(currentRateForLenderAndMortgageType.getPrice())) {
+                lenderParValueRateMap.put(lenderMortgageTypePair, rate);
             }
         }
         return new ArrayList<>(lenderParValueRateMap.values());
